@@ -1,2 +1,7 @@
 # Technica2019HackThing
-Technica Hack Thing
+# 
+# Command Line: 
+# Objective-
+# Categorization of space objects using April tag
+#
+#
