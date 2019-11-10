@@ -1,7 +1,6 @@
 # Technica2019HackThing
-# 
-# Command Line: 
-# Objective-
-# Categorization of space objects using April tag
-#
-#
+
+# Overview: 
+  A CLI that allows users to scan equipment being sent to space via AprilTags into a database and update preexisting tags
+# Dependencies:
+  See requirements.txt
