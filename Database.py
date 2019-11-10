@@ -7,18 +7,23 @@
 # For this specific script, use the .json file in the git and change the directory to where you stored it
 
 
-def collect_data(self, dp, dict_apriltag, dict_cmdln):
+def collect_data(dp, dict_apriltag, dict_cmdln):
     # initialize variable
     for key in dict_apriltag.keys():
-        name = (key[0] + key[1])
+        family = key[0].decode('utf-8')
+        id = str(key[1])
+        name = family + id
         tup1 = dict_apriltag[key]
 
         if dict_cmdln:
             tup2 = dict_cmdln[key]
-            data = {u'location': tup1[0], u'name': tup2[0], u'owner': tup2[1]}
+            data = {u'x': tup1[0][0], u'y': tup1[0][1], u'name': tup2[0], u'owner': tup2[1]}
             dp.collection(u'space_objects').document(name).set(data)
         else:
-            dp.collection(u'space_objects').document(name).update({u'location': tup1[0]})
+            try:
+                dp.collection(u'space_objects').document(name).update({u'x': tup1[0][0], u'y': tup1[0][1]})
+            except Exception as e:
+                print("Update failed: Equipment {0} not found".format(name))
 
 
 '''

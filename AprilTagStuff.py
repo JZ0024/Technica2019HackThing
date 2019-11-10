@@ -18,13 +18,6 @@ def scan_image(i):
     return retval
 
 
-# (img1: Image) -> List of Tuples
-# Returns the tuple of tag_family and tag_id
-def get_tags(img1):
-    tags = scan_image(img1)
-    return tags.keys()
-
-
 # (img1: Image, img2: Image) -> Dict(Tuple(tag_family, tag_id), Tuple(List, List))
 # Calculates travelled distance and returns it as a dict connecting the tuple of tag_family
 # and tag_id to the calculated distance
