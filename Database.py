@@ -5,13 +5,14 @@
 # https://firebase.google.com/docs/admin/setup#initialize_the_sdk
 # and generate the private key and save the JSON file
 # For this specific script, use the .json file in the git and change the directory to where you stored it
-
-privateKeyPATH = 'C:\\Users\\joysx\\Documents\\Technica2019/Technica2019-018c25227268.json'
+from Tools.scripts import google
 
 # initialize on my own server
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+
+privateKeyPATH = 'C:\\Users\\joysx\\Documents\\Technica2019/technica2019-firebase-adminsdk-vwttx-a9a3002e60.json'
 
 # use a service account => need to figure out how to initialize using GCP
 cred = credentials.Certificate(privateKeyPATH)
@@ -52,16 +53,43 @@ class SpaceJacked(object):
         self.ownership = ownership
         self.location = location
 
-        def from_dict(source):
-            source.blank = 'start'
+    @staticmethod
+    def from_dict(source):
+        # code snippet from
+        # https://github.com/GoogleCloudPlatform/python-docs-samples/blob/70c3595237e390628d377df9e87402e01af15066/
+        # firestore/cloud-client/snippets.py#L103-L154
 
-        def to_dict(self):
-            self.blank = 'start'
+        # [START_EXCLUDE]
+        data = SpaceJacked(source[u'identifier'], source[u'name'], source[u'ownership'], source[u'location'])
 
-        def __repr__(self):
-            return (
-                u'City(identifier={}, name={}, ownership={}, location={})'.format(
-                    self.identifier, self.name, self.ownership, self.location))
+        return data
+        # [END_EXCLUDE]
+
+    def to_dict(self):
+        # [START_EXCLUDE]
+        data = {
+            u'identifier': self.identifier,
+            u'name': self.name,
+            u'ownership': self.ownership,
+            u'location': self.location
+        }
+        return data
+
+    def __repr__(self):
+        return (
+            u'SpaceJacked(identifier={}, name={}, ownership={}, location={})'.format(
+                self.identifier, self.name, self.ownership, self.location))
 
 
-satellite1 = SpaceJacked(identifier=u'11102019', name=u'satcom1', ownership=u'SSL', location=u'collegePark')
+satellite1 = SpaceJacked(identifier=u'11102019', name=u'satCOM1', ownership=u'SSL', location=u'collegePark')
+# satellite2 = SpaceJacked(identifier=u'06031998', name=u'satCOM2', ownership=u'NASA', location=u'Seoul')
+
+db.collection(u'SpaceThings').document('satellites').set(satellite1.to_dict())
+# db.collection(u'SpaceThings').add(satellite1.to_dict())
+# db.collection(u'SpaceThings').document('satellites').set(satellite2.to_dict())
+
+doc_ref = db.collection(u'SpaceThings').document('satellites')
+
+doc = doc_ref.get()
+satellite = SpaceJacked.from_dict(doc.to_dict())
+print(satellite)
