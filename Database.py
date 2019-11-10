@@ -6,7 +6,7 @@
 # and generate the private key and save the JSON file
 # For this specific script, use the .json file in the git and change the directory to where you stored it
 
-privateKeyPATH = 'C:\\Users\\joysx\\Documents\\Technica2019/technica2019-firebase-adminsdk-ih38o-78386d1fc2.json'
+privateKeyPATH = 'C:\\Users\\joysx\\Documents\\Technica2019/Technica2019-018c25227268.json'
 
 # initialize on my own server
 import firebase_admin
@@ -17,7 +17,7 @@ from firebase_admin import firestore
 cred = credentials.Certificate(privateKeyPATH)
 firebase_admin.initialize_app(cred)
 
-db=firestore.client()
+db = firestore.client()
 
 '''
 # from the tutorial.. making references to data collection/documents 
@@ -44,3 +44,24 @@ for doc in docs:
     print(u'{} => {}'.format(doc.id, doc.to_dict()))
 '''
 
+
+class SpaceJacked(object):
+    def __init__(self, identifier, name, ownership, location):
+        self.identifier = identifier
+        self.name = name
+        self.ownership = ownership
+        self.location = location
+
+        def from_dict(source):
+            source.blank = 'start'
+
+        def to_dict(self):
+            self.blank = 'start'
+
+        def __repr__(self):
+            return (
+                u'City(identifier={}, name={}, ownership={}, location={})'.format(
+                    self.identifier, self.name, self.ownership, self.location))
+
+
+satellite1 = SpaceJacked(identifier=u'11102019', name=u'satcom1', ownership=u'SSL', location=u'collegePark')
