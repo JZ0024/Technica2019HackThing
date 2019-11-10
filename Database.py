@@ -81,15 +81,24 @@ class SpaceJacked(object):
                 self.identifier, self.name, self.ownership, self.location))
 
 
+# add in the objects
 satellite1 = SpaceJacked(identifier=u'11102019', name=u'satCOM1', ownership=u'SSL', location=u'collegePark')
-# satellite2 = SpaceJacked(identifier=u'06031998', name=u'satCOM2', ownership=u'NASA', location=u'Seoul')
+satellite2 = SpaceJacked(identifier=u'06031998', name=u'satCOM2', ownership=u'CHO', location=u'Seoul')
 
-db.collection(u'SpaceThings').document('satellites').set(satellite1.to_dict())
-# db.collection(u'SpaceThings').add(satellite1.to_dict())
-# db.collection(u'SpaceThings').document('satellites').set(satellite2.to_dict())
+satellite_ref = db.collection(u'Satellites')
+satellite_ref.document('satellite1').set(satellite1.to_dict())
+satellite_ref.document('satellite2').set(satellite2.to_dict())
+# db.collection(u'Satellites').document('satellite1').set(satellite1.to_dict())
+# db.collection(u'Satellites').document('satellite2').set(satellite2.to_dict())
 
-doc_ref = db.collection(u'SpaceThings').document('satellites')
-
+'''
+# for printing out a single object
+doc_ref = db.collection(u'Satellites').document('satellite1')
 doc = doc_ref.get()
 satellite = SpaceJacked.from_dict(doc.to_dict())
 print(satellite)
+'''
+# for printing out multiple objects
+satellite_ref = db.collection(u'Satellites').stream()
+for doc in satellite_ref:
+    print(u'{} => {}'.format(doc.id, doc.to_dict()))
