@@ -5,6 +5,8 @@ import apriltag
 import numpy as np
 
 
+# (i: Image) -> Dictionary of tuple(tag_family, tag_id): tuple(center: List, corners: List)
+# Uses apriltag module to check for apriltags then returns it as a dict
 def scan_image(i):
     detector = apriltag.Detector()
     dets = detector.detect(i)
@@ -16,11 +18,16 @@ def scan_image(i):
     return retval
 
 
+# (img1: Image) -> List of Tuples
+# Returns the tuple of tag_family and tag_id
 def get_tags(img1):
     tags = scan_image(img1)
-    return [t[0] for t in tags.keys()]
+    return tags.keys()
 
 
+# (img1: Image, img2: Image) -> Dict(Tuple(tag_family, tag_id), Tuple(List, List))
+# Calculates travelled distance and returns it as a dict connecting the tuple of tag_family
+# and tag_id to the calculated distance
 def calculate_travel(img1, img2):
     tags1 = scan_image(img1)
     tags2 = scan_image(img2)
@@ -35,6 +42,8 @@ def calculate_travel(img1, img2):
     return distances
 
 
+# (img: Image) -> (homography: Image)
+# Makes a black and white copy of the original image and returns the copy with the apriltags highlighted
 def highlight_image(img):
     tags = scan_image(img)
     homography = None
@@ -42,7 +51,7 @@ def highlight_image(img):
 
     for tag in tags:
         matrix = tags[tag][1]
-        homography = cv2.polylines(copy, [np.int32(matrix)], True, (255, 0, 0), 3)
+        homography = cv2.polylines(copy, [np.int32(matrix)], True, (255, 0, 0), 2)
 
-    if homography.size > 0:
+    if (homography is not None) and homography.size > 0:
         return homography
