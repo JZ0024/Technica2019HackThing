@@ -8,22 +8,41 @@ import numpy as np
 def scan_image(i):
     detector = apriltag.Detector()
     dets = detector.detect(i)
+    retval = {}
 
-    return dets
+    for d in dets:
+        retval[(d.tag_family, d.tag_id)] = (d.center, d.corners)
+
+    return retval
 
 
-if __name__ == "__main__":
-    img = 'test2.png'
-    image = cv2.imread(img, cv2.IMREAD_GRAYSCALE)
-    dts = scan_image(image)
+def get_tags(img1):
+    tags = scan_image(img1)
+    return [t[0] for t in tags.keys()]
+
+
+def calculate_travel(img1, img2):
+    tags1 = scan_image(img1)
+    tags2 = scan_image(img2)
+    distances = {}
+    shared_tags = set(tags1.keys()) & set(tags2.keys())
+
+    for tag in shared_tags:
+        d1_center = tags1[tag][0]
+        d2_center = tags2[tag][0]
+        distances[tag] = np.sqrt((np.power(d2_center[0], 2) - np.power(d1_center[0], 2))
+                                 + (np.power(d2_center[1], 2) - np.power(d1_center[1], 2)))
+    return distances
+
+
+def highlight_image(img):
+    tags = scan_image(img)
     homography = None
+    copy = img.copy()
 
-    for d in dts:
-        retval = image.copy()
-        matrix = d.corners
-        homography = cv2.polylines(image, [np.int32(matrix)], True, (255, 0, 0), 3)
+    for tag in tags:
+        matrix = tags[tag][1]
+        homography = cv2.polylines(copy, [np.int32(matrix)], True, (255, 0, 0), 3)
 
     if homography.size > 0:
-        cv2.imshow("Homography", homography)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        return homography
