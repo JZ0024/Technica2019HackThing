@@ -46,7 +46,7 @@ def calculate_travel(img1, img2):
 # Makes a black and white copy of the original image and returns the copy with the apriltags highlighted
 def highlight_image(img):
     tags = scan_image(img)
-    homography = None
+    homography = img
     copy = img.copy()
 
     for tag in tags:
