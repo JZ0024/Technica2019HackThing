@@ -6,9 +6,8 @@ import readline
 import rlcompleter
 from AprilTagStuff import *
 from Database import *
-from google.cloud import firestore
-
-#firebase = firebase.FirebaseApplication('')
+import firebase_admin
+from firebase_admin import credentials
 
 
 class CommandLineTool(cmd.Cmd):
@@ -16,49 +15,36 @@ class CommandLineTool(cmd.Cmd):
     prompt = '(Database)'
     file = None
 
-
-    # read line functionality
-    readline.parse_and_bind("tab: complete")
-
-# ----- commands in database ( methods to be updated after 10:15 PM 09Nov19 -----
-# getting the collection of users from db
-
-
-#users_ref = db.collection(u'users')
-#docs = users_ref.stream()
-
-#for doc in docs:
-    #print(u'{} => {}'.format(doc.id, doc.to_dict()))
-
-
     def do_update(self, arg):
         """Pulls old image from database and compares it to new image"""
         # pull old image
-        img1 = #pull from db
-        tags = scan_image(img1)
-        for tag in tags:
-            print("Updating tag %s location".format(# db tag name))
-            # update database
-        print("Finished Update")
+        img = cv2.imread(arg, cv2.IMREAD_GRAYSCALE)
+        tags = scan_image(img)
 
+        for tag in tags:
+            print("Updating tag {0} location".format(tag))
+            # update database
 
     def do_sync(self, arg):
         """Scan tagged equipment into system **one at a time**"""
         ls = arg.split()
-        if ls.size > 1:
-            print("One at a time")
+        img = cv2.imread(ls[0], cv2.IMREAD_GRAYSCALE)
+        tags = scan_image(img)
+        if len(ls) != 1 or len(tags) != 1:
+            print("One tag at a time")
         else:
-            tags = get_tags(ls[0])
+            img = cv2.imread(ls[0], cv2.IMREAD_GRAYSCALE)
+            tags = scan_image(img)
 
             for t in tags:
-            name = None
-            while not name:
-                name = input("Enter Equipment Name >> ")
-            owner = None
-            while not owner:
-                owner = input("Enter Ownership Here >> ")
+                print("Information for Tag {0}".format(t))
+                name = None
+                while not name:
+                    name = input("Enter Equipment Name >> ")
+                owner = None
+                while not owner:
+                    owner = input("Enter Ownership Here >> ")
             # push dict and fields to db
-
 
     def do_highlight(self, arg):
         """test highlight"""
@@ -68,10 +54,13 @@ class CommandLineTool(cmd.Cmd):
             a = cv2.imread(l, cv2.IMREAD_GRAYSCALE)
             cv2.imwrite('highlighted_' + l, highlight_image(a))
 
-
     def do_exit(self, arg):
         sys.exit()
 
 
 if __name__ == '__main__':
+    cred = credentials.Certificate("path/to/serviceAccountKey.json")
+    firebase_admin.initialize_app(cred)
+
+    db = firestore.client()
     CommandLineTool().cmdloop()
