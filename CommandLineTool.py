@@ -6,10 +6,9 @@ import readline
 import rlcompleter
 
 from Database import *
-from firebase import firebase
+from google.cloud import firestore
 
 firebase = firebase.FirebaseApplication('')
-
 
 
 class CommandLineTool(cmd.Cmd):
@@ -21,8 +20,17 @@ class CommandLineTool(cmd.Cmd):
 # read line functionality
 readline.parse_and_bind("tab: complete")
 
-
 # ----- commands in database ( methods to be updated after 10:15 PM 09Nov19 -----
+# getting the collection of users from db
+
+
+users_ref = db.collection(u'users')
+docs = users_ref.stream()
+
+for doc in docs:
+    print(u'{} => {}'.format(doc.id, doc.to_dict()))
+
+
 def do_undo(self, arg):
     """Undo (repeatedly) the last database action(s):  UNDO"""
 
